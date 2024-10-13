@@ -1,12 +1,18 @@
 #[allow(unused_imports)]
 use std::io::{self, Write};
+// use std::path::Path;
 
 fn typey(slic: &str) {
+    let path_env = std::env::var("PATH").unwrap();
     match slic {
         "echo" => println!("{} is a shell builtin", slic),
         "type" => println!("{} is a shell builtin", slic),
         "exit" => println!("{} is a shell builtin", slic),
-        _ => println!("{}: not found", slic),
+        _ => println!("{}", path_env),
+        // _ => match path.exists() {
+        //     true => println!("{} is {}", slic, path.display()),
+        //     _ => println!("{}: not found", slic),
+        // }, // _ => println!("{}: not found", slic),
     }
 }
 
@@ -20,7 +26,7 @@ fn main() {
         let mut input = String::new();
         stdin.read_line(&mut input).unwrap();
         let input = input.trim();
-        let mut split: Vec<&str> = input.split(" ").collect();
+        let split: Vec<&str> = input.split(" ").collect();
         // println!("{}", first.unwrap());
 
         match split[..] {
