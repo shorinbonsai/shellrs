@@ -9,6 +9,8 @@ fn typey(slic: &str) {
         "echo" => println!("{} is a shell builtin", slic),
         "type" => println!("{} is a shell builtin", slic),
         "exit" => println!("{} is a shell builtin", slic),
+        "pwd" => println!("{} is a shell builtin", slic),
+        "cd" => println!("{} is a shell builtin", slic),
         _ => match find_in_path(slic) {
             Some(path) => println!("{}", path.display()),
             None => println!("{slic}: not found"),
@@ -28,7 +30,19 @@ fn find_in_path(command: &str) -> Option<PathBuf> {
     None
 }
 
-fn main() {
+fn change_dir(pathy: &str) {
+    let path = Path::new(pathy);
+    let home = env::var("HOME").unwrap();
+    if path.exists() {
+        let _ = env::set_current_dir(path);
+    } else if pathy == "~" {
+        let _ = env::set_current_dir(home);
+    } else {
+        println!("cd: {}: No such file or directory", path.display());
+    }
+}
+
+fn main() -> std::io::Result<()> {
     loop {
         print!("$ ");
         io::stdout().flush().unwrap();
@@ -46,6 +60,8 @@ fn main() {
             ["exit", "0"] => break,
             ["echo", ..] => println!("{}", split[1..].join(" ")),
             ["type", ..] => typey(split[1]),
+            ["pwd", ..] => println!("{}", env::current_dir()?.display()),
+            ["cd", ..] => change_dir(split[1]),
             [..] => {
                 if let Some(path) = find_in_path(split[0]) {
                     Command::new(path)
@@ -58,4 +74,5 @@ fn main() {
             }
         }
     }
+    Ok(())
 }
